@@ -3,8 +3,8 @@
 pragma solidity >0.5.0;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 
-import './interfaces/IVaultFactory.sol';
 
 /**
 * @title Ownable
@@ -17,24 +17,43 @@ contract Ownable is ReentrancyGuard {
     address public team;
     address public pendingGovernance;
     uint256 public protocolFee;
-    
-    address public vaultFactory;
 
+    IUniswapV3Pool internal  pool;
+    int24 internal  tickSpacing;
+
+    int24 public cLow;
+    int24 public cHigh;
+
+	uint256 internal uFees0;	// uniswap fee of token0 for the current position
+	uint256 internal uFees1;	// uniswap fee of token1 for the current position
+	uint256 internal lFees0;
+	uint256 internal lFees1;
+
+	struct FeeStruct {
+		uint256 U3Fees0;				// uni v3 fees 0
+		uint256 U3Fees1;				// uni v3 fees 1
+		uint256 LcFees0;				// compound fees0
+		uint256 LcFees1;				// compound fees1
+	    uint256 AccruedProtocolFees0;		// for view
+	    uint256 AccruedProtocolFees1;		// for view
+	}
 
      // Asset of each user.
 	struct Assets  {
     	uint256 deposit0;   	// user's accumulative deposits for token0
 		uint256 deposit1; 	// user's accumulative deposits for token1
-		uint256 fees0;		// user's dividend of token0 from uniswap v3
-		uint256 fees1;		// user's dividend of token1 from lending pool
-//		uint16 block0;  	// block num of user's initial deposit
-//		uint16 block1;  	// block num of user's last deposit
+		uint256 current0;		// log current locked value of token0
+		uint256 current1;		// log current locked value of token1
+		uint256 block; 		//  last block number that a user made deposit
     }
     
     address[] public accounts;
     
+    
     mapping(address => Assets)  public Assetholder;
     
+    FeeStruct public Fees;
+
 	
     //Asset storage c = Assetholder[accounts[i]]
   	//Asset({capital0:amountToken0, capital1:0,fees0:0,fees1:0});
@@ -53,24 +72,20 @@ contract Ownable is ReentrancyGuard {
 
 
 
+	/// maintain a user address array
     function _push(address _address ) internal {
     	
-		bool _exists= false;
-		uint cnt = accounts.length;
-		
-		for (uint i=0; i< cnt; i++) {
-			if (accounts[i] == _address) {
-				_exists = true;
-				break;
-			}
-        }
-        
-        if (!_exists) accounts.push(_address);
+		if (Assetholder[_address].block == 0 ) {
+        	accounts.push(_address);
+			Assetholder[_address].block = block.number;	
+		} else {
+			Assetholder[_address].block = block.number;	// update block number
+		}
 
     }
 
 	// commen out because code size exceeds 24576bytes    
-    // function list() external view onlyTeam returns (address[]  memory ) {
+    // function list() external view onlyGovernance returns (address[]  memory ) {
     //     return accounts;
     // }
 
@@ -96,11 +111,6 @@ contract Ownable is ReentrancyGuard {
         team = _team;
     }
     
-    modifier onlyTeam {
-         require(msg.sender == team, "team");
-        _;
-    }
-
 	
     modifier onlyGovernance {
          require(msg.sender == governance, "governance");
@@ -109,23 +119,23 @@ contract Ownable is ReentrancyGuard {
     
     
 
-    function setMaxTwapDeviation(int24 _maxTwapDeviation) external onlyTeam {
+    function setMaxTwapDeviation(int24 _maxTwapDeviation) external onlyGovernance {
          require(_maxTwapDeviation > 0, "maxTwapDeviation");
         maxTwapDeviation = _maxTwapDeviation;
     }
 
-    function setTwapDuration(uint32 _twapDuration) external onlyTeam {
+    function setTwapDuration(uint32 _twapDuration) external onlyGovernance {
          require(_twapDuration > 0, "twapDuration");
         twapDuration = _twapDuration;
     }
     
-    function setUniPortionRatio(uint8 ratio) external onlyTeam {
+    function setUniPortionRatio(uint8 ratio) external onlyGovernance {
     	require (ratio <= 100,"ratio");
 		uniPortion = ratio;
     }
 
     function setProtocolFee(uint256 _protocolFee) external onlyGovernance {
-        require(_protocolFee < 1e6, "protocolFee");
+        require(_protocolFee <= 20, "protocolFee");
         protocolFee = _protocolFee;
     }
     
@@ -134,21 +144,13 @@ contract Ownable is ReentrancyGuard {
     }
 
 	// /// return capital amount
-	function getStoredAssets(address who) public view returns( uint256 , uint256,uint256, uint256 ) {
+	function getStoredAssets(address who) public view returns( uint256 , uint256, uint256, uint256 ) {
 	   	return (
 			Assetholder[who].deposit0,
 			Assetholder[who].deposit1 , 
-			Assetholder[who].fees0 , 
-			Assetholder[who].fees1 );
+			Assetholder[who].current0 , 
+			Assetholder[who].current1 );
 	}
-
-
-    /// @dev Prevents calling a function from anyone except the address returned by IUniswapV3Factory#owner()
-    modifier onlyFactoryOwner() {
-        require(msg.sender == IVaultFactory(vaultFactory).owner(), "fOwner");
-        _;
-    }
-    
 
 
 
