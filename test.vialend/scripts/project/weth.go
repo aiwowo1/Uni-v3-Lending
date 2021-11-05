@@ -16,33 +16,51 @@ func DeployWETH() {
 	DeployWrappedEther()
 }
 
-func Test_weth_deposit(amt int64) {
+func Test_weth_deposit(WETH string, accId int, amt int64) {
 
 	fmt.Println("Env: NetworkId=", config.Networkid, ",client=", config.Network.ProviderUrl[config.ProviderSortId])
 
-	instance := GetWethInstance()
+	fmt.Println("----------------------------------------------")
+	fmt.Println(".........wrap .........  ")
+	fmt.Println("----------------------------------------------")
+	fmt.Println("WETH ADDRESS:", WETH)
+
+	config.ChangeAccount(accId)
+
+	instance := GetWethInstance(common.HexToAddress(WETH))
 
 	//weth deposit
-	ethAmount := config.X1E18(amt)
+	ethAmount := X1E18(amt)
+
 	config.Auth.Value = ethAmount
-	tx, err := instance.Deposit(config.Auth)
+
+	tx, err := instance.Deposit(config.Auth) // value is eth
 
 	if err != nil {
 		log.Fatal("weth deposit err ", err)
 	}
 
 	fmt.Println("weth deposit 1 eth tx: ", tx.Hash().Hex())
+	fmt.Println("wrapped eth amount:", amt, " to: ", config.FromAddress)
+
+	config.ChangeAccount(config.Account)
 
 }
 
-func Test_weth_withdraw(amt int64) {
+func Test_weth_withdraw(WETH string, accId int, amt int64) {
 
 	fmt.Println("Env: NetworkId=", config.Networkid, ",client=", config.Network.ProviderUrl[config.ProviderSortId])
+	fmt.Println("----------------------------------------------")
+	fmt.Println(".........unwrap .........  ")
+	fmt.Println("----------------------------------------------")
+	fmt.Println("WETH ADDRESS:", WETH)
 
-	instance := GetWethInstance()
+	config.ChangeAccount(accId)
+
+	instance := GetWethInstance(common.HexToAddress(WETH))
 
 	//weth deposit
-	ethAmount := config.X1E18(amt)
+	ethAmount := X1E18(amt)
 
 	tx, err := instance.Withdraw(config.Auth, ethAmount)
 
@@ -51,12 +69,15 @@ func Test_weth_withdraw(amt int64) {
 	}
 
 	fmt.Println("weth withdraw 1 eth tx: ", tx.Hash().Hex())
+	fmt.Println("unwrapped weth amount:", amt, " to: ", config.FromAddress)
+
+	config.ChangeAccount(config.Account)
 
 }
 
-func GetWethInstance() *weth.Api {
+func GetWethInstance(WETH common.Address) *weth.Api {
 
-	instance, err := weth.NewApi(common.HexToAddress(config.Network.LendingContracts.WETH), config.Client)
+	instance, err := weth.NewApi(WETH, config.Client)
 	if err != nil {
 		log.Fatal("get token Instance,", err)
 	}

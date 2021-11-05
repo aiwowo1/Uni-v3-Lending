@@ -9,12 +9,12 @@ func main() {
 	// NOTE: make sure vault address in network.go is up to date
 
 	//eventname: MyLog, MyLog2, Withdraw, Deposit
-	eventname := "MyLog4"
-	block0 := 5695911
+	eventname := "Withdraw"
+	block0 := 5749942
+	block1 := 5749942
 
-	block1 := 5695913
 	project.VaultEvent(eventname, int64(block0), int64(block1))
-
+	//project.TestCalleeEvent(eventname, int64(block0), int64(block1))
 }
 
 // withdraw 1%	   129684769397849 	 74398713

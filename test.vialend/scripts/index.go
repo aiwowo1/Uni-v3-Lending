@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"math/big"
-	"time"
+	_ "time"
 
 	"./config"
 	project "./project"
@@ -28,7 +28,7 @@ type Switcher struct {
 	MintPoolParam    [3]int64
 	DeployVault      int
 	Deposit          int
-	DepositParam     [4]int64
+	DepositParam     [3]int64
 	Withdraw         int
 	WithDrawParam    [2]int64
 	Rebalance        int
@@ -50,155 +50,124 @@ func main() {
 
 	project.Init()
 
-	// project.Withdraw(1, [2]int64{100, 0})
-	//project.Withdraw(1, [2]int64{100, 3})
+	project.Quiet = false
 
-	project.AccountInfo()
-	//project.SetProtocolFee(big.NewInt(1e5))
-	project.VaultInfo(1)
-	return
-
-	//project.Alloc(0)
-	//project.SetUniswapPortionRatio(50)
-	// project.Strategy1(1, [3]int64{400, 60, 0})
-	// project.AccountInfo()
-	// project.VaultInfo(1)
+	// DeployAll()
 	// return
-	//-- test emergency
-	//project.EmergencyBurn()
+
+	// // // newVault()
+
+	// project.GetCapital(1)
+	// project.GetCapital(3)
+	// project.LendingInfo()
+	// // project.AccountInfo()
+	// project.VaultInfo()
+	// // project.PoolInfo()
+	// //project.FindPool()
+	// // project.GetPool("0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6", "0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60", 500)
+	// return
+	//project.Test_weth_deposit("0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6", 5, 15) // weth address, accountid, amount
+	//project.Test_weth_withdraw("0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6", 3, 15)
+
+	//check token decimals and info
+	// fmt.Println(project.GetTokenInstance("0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05"))
 	//return
 
-	//project.DeployVialendFeemaker(0, big.NewInt(0), 50) //account, protocolfee, uniportion
-	//project.Deposit(1, [4]int64{1, 500, 0, 1}, false)
-	//project.Deposit(1, [4]int64{2, 0, 3, 1}, false)
+	//project.SetProtocolFee(big.NewInt(10))
+	//project.SetUniswapPortionRatio(50)
+	//	project.Withdraw(1, [2]int64{100, 4}) // team withdraw
+	project.Deposit(1, [3]int64{1, 1, 0}, false)
+	//project.Deposit(1, [3]int64{2, 2, 1}, false)
+	//project.EmergencyBurn()
+
+	project.Strategy1(500, 1)
 	// project.AccountInfo()
-	// project.VaultInfo(1)
-	project.Withdraw(1, [2]int64{100, 0})
-	// project.Withdraw(1, [2]int64{100, 3})
-	// project.AccountInfo()
-	// project.VaultInfo(1)
+	project.VaultInfo()
+	// // //project.Alloc(1)
 	return
 
-	// project.Strategy1(1, [3]int64{500, 60, 0})
-	// // project.AccountInfo()
-	// // project.VaultInfo(1)
-	// // project.Strategy1(1, [3]int64{400, 60, 0})
-	// project.AccountInfo()
-	// project.VaultInfo(1)
-	// project.Withdraw(1, [2]int64{100, 0})
-	// project.Withdraw(1, [2]int64{100, 3})
-	// project.AccountInfo()
-	// project.VaultInfo(1)
-	// return
-	//project.DeployVialendFeemaker(0, big.NewInt(0), 50) //account, protocolfee, uniportion
-	project.Deposit(1, [4]int64{-1, -1, 0, 1}, false)
-	project.Strategy1(1, [3]int64{600, 60, 0})
-	project.Strategy1(1, [3]int64{400, 60, 0})
-	project.Strategy1(1, [3]int64{300, 60, 0})
-	project.Strategy1(1, [3]int64{500, 60, 0})
-	project.AccountInfo()
-	project.VaultInfo(1)
-	project.Deposit(1, [4]int64{-1, -1, 3, 1}, false)
-	project.Strategy1(1, [3]int64{600, 60, 0})
-	project.Strategy1(1, [3]int64{400, 60, 0})
-	project.Strategy1(1, [3]int64{300, 60, 0})
-	project.Strategy1(1, [3]int64{500, 60, 0})
-	// project.AccountInfo()
-	// project.VaultInfo(1)
-	// project.Strategy1(1, [3]int64{400, 60, 0})
-	project.AccountInfo()
-	project.VaultInfo(1)
-	//project.Withdraw(1, [2]int64{100, 0})
-	//project.Withdraw(1, [2]int64{100, 3})
-	project.AccountInfo()
-	project.VaultInfo(1)
-	return
+	// // // project.Strategy1( [3]int64{400, 60, 0})
 
-	//-- test deposit and withdraw
-	project.Deposit(1, [4]int64{1, 500, 0, 1}, false)
-	//	project.Deposit(1, [4]int64{2, 2000, 3, 1}, false)
-	project.AccountInfo()
-	project.VaultInfo(1)
-
-	//for i := 0; i < 50; i++ {
-	project.Strategy1(1, [3]int64{600, 60, 0})
-	project.AccountInfo()
-	project.VaultInfo(1)
-	time.Sleep(60 * time.Second)
-	project.Strategy1(1, [3]int64{400, 60, 0})
-	project.AccountInfo()
-	project.VaultInfo(1)
-	//}
-	time.Sleep(60 * time.Second)
-	project.Deposit(1, [4]int64{2, 2000, 3, 1}, false)
-	project.AccountInfo()
-	project.VaultInfo(1)
-	project.Strategy1(1, [3]int64{400, 60, 0})
-	//project.Strategy1(1, [3]int64{1200, 60, 0})
-	project.AccountInfo()
-	project.VaultInfo(1)
-
+	// project.AccountInfo()
+	project.Strategy1(200, 1)
 	project.Withdraw(1, [2]int64{100, 0})
+	project.Withdraw(1, [2]int64{100, 1})
 	project.Withdraw(1, [2]int64{100, 3})
-
-	//project.Alloc(0)
-
-	project.AccountInfo()
-	project.VaultInfo(1)
+	project.VaultInfo()
 	return
 
-	//project.Test_weth_deposit(30)
-	//project.Test_weth_withdraw(3)
+	//project.Withdraw(1, [2]int64{100, 0})
+	//project.Withdraw(1, [2]int64{100, 1})
+	//project.Withdraw(1, [2]int64{100, 3})
+	//return
 
-	// test deposit strategy1 withdraw, redeposit and more rebalance, withdraw
-	// project.Deposit(1, [4]int64{1, 1, 1, 0})
-	// project.Deposit(1, [4]int64{6, 900, 3, 0})
+	//project.Deposit(1, [3]int64{1, 10, 0}, false)
+	// project.Deposit(1, [3]int64{0, 500, 1}, false)
+	// return
 
-	// project.Strategy1(1, [3]int64{600, 60, 3})
-	// project.Deposit(1, [4]int64{1, 1, 1, 0})
-	// project.Deposit(1, [4]int64{2, 2, 0, 0})
-	// project.Strategy1(1, [3]int64{400, 60, 3})
-	// project.Deposit(1, [4]int64{1, 1, 1, 0})
-	// project.Deposit(1, [4]int64{2, 2, 0, 0})
-	// project.Strategy1(1, [3]int64{200, 60, 3})
-	// project.Deposit(1, [4]int64{1, 1, 1, 0})
-	// project.Deposit(1, [4]int64{2, 2, 0, 0})
-	// project.Strategy1(1, [3]int64{1600, 60, 3})
-	// project.Deposit(1, [4]int64{1, 1, 1, 0})
-	// project.Deposit(1, [4]int64{2, 2, 0, 0})
+	// project.AccountInfo()
+	// project.VaultInfo()
+	// project.Withdraw(1, [2]int64{100, 0}) // team withdraw
+	//project.Deposit(1, [3]int64{2, 0, 0}, true)
+	//time.Sleep(10 * time.Second)
+	// project.AccountInfo()
 
-	// project.VaultInfo(1)
-	// project.Withdraw(1, [2]int64{100, 3})
+	project.Strategy1(500, 0)
+
+	project.VaultInfo()
+
+	project.GenFees(4, 2) // swap times, swap account, amount , sleepSeconds
+
+	project.Strategy1(500, 0)
+
+	project.VaultInfo()
+
+	return
+
+	// //project.genFees(4, 5)
+
+	// project.Alloc(0)
+	// project.AccountInfo()
+	// project.VaultInfo()
+	project.Strategy1(500, 1)
+	project.Strategy1(200, 1)
+	//project.Withdraw(1, [2]int64{100, 0})
 	// project.Withdraw(1, [2]int64{100, 1})
-	// project.VaultInfo(1)
-
-	// return
-
-	// project.AccountInfo()
-	// project.VaultInfo(1)
-	// return
-
-	//	project.LendingInfo()
-	// project.AccountInfo()
-
-	//project.GetCapital(1)
-	//	project.GetCapital(3)
-
-	//project.SetUniswapPortionRatio(1)
-
-	//	fullCycleTest()
-	//project.VaultInfo(1)
-
-	// return
-	//test_vault()
-
-	project.GetCapital(1)
-	project.GetCapital(3)
-	project.LendingInfo()
+	//project.Withdraw(1, [2]int64{100, 3})
+	//project.Deposit(1, [3]int64{0, -1, 1}, false)
 	project.AccountInfo()
-	project.VaultInfo(1)
-	project.PoolInfo()
-	//project.GetPoolFromToken()
+	project.VaultInfo()
+	return
+
+}
+
+func newVault() {
+
+	networkId := 3
+	acc := 0
+	token0 := config.Network.TokenA
+	token1 := config.Network.TokenB
+
+	feetier := int64(10000) //10000, 3000, 500 //config.Network.FeeTier
+
+	_protocolfee := big.NewInt(10)
+	_quoteAmount := big.NewInt(1e18)
+	_uniPortion := 20
+	team := "0xEa24c7256ab5c61b4dC1c5cB600A3D0bE826a440"
+	strategy := config.Indi(0)
+
+	project.VaultGen(networkId, acc, token0, token1, feetier, _protocolfee, _quoteAmount, _uniPortion, team, strategy)
+
+}
+
+func DeployAll() {
+
+	//project.DeployCallee()
+
+	//networkid, account, protocolfee, uniportion, team address to get fee cut
+	project.DeployVialendFeemaker(3, 1, big.NewInt(10), 90, "0xEa24c7256ab5c61b4dC1c5cB600A3D0bE826a440")
+	project.DeployVialendFeemaker(4, 1, big.NewInt(10), 30, "0xEa24c7256ab5c61b4dC1c5cB600A3D0bE826a440")
+
 }
 
 func test_vault() {
@@ -214,8 +183,8 @@ func test_vault() {
 	//...manual step... update the new token addres in networks.go
 
 	sw.TransferToken = 0
-	sw.TransferParam[0] = TransferStruct{0, config.X1E18(900), config.Network.TokenA, "0xeBb29c07455113c30810Addc123D0D7Cd8637aea"}
-	sw.TransferParam[1] = TransferStruct{0, config.X1E18(900), config.Network.TokenB, "0xeBb29c07455113c30810Addc123D0D7Cd8637aea"}
+	sw.TransferParam[0] = TransferStruct{0, project.X1E18(900), config.Network.TokenA, "0xeBb29c07455113c30810Addc123D0D7Cd8637aea"}
+	sw.TransferParam[1] = TransferStruct{0, project.X1E18(900), config.Network.TokenB, "0xeBb29c07455113c30810Addc123D0D7Cd8637aea"}
 
 	sw.CreatePool = 0 // *Note: if token0+token1+fee = pool exists ERROR: createPool VM Exception while processing transaction: revert
 	sw.InitialPool = 0
@@ -229,7 +198,7 @@ func test_vault() {
 	//...manual step... update the new vault addres in networks.go
 
 	sw.Deposit = 1
-	sw.DepositParam = [4]int64{1, 1, 1, 1} // {amount0, amount1 , account, approve}
+	sw.DepositParam = [3]int64{1, 1, 1} // {amount0, amount1 , account}
 
 	sw.Strategy1 = 1
 	sw.Strategy1Param = [3]int64{600, 60, 3} // {tick range, tickspacing, account}
@@ -254,17 +223,6 @@ func test_vault() {
 	sw.CreatePosition = -1
 	sw.IncreasePosition = -1
 	sw.RemovePosition = -1
-
-	if sw.CollectFees > 0 {
-
-		project.AccountInfo()
-		project.VaultInfo(1)
-		project.CollectProtocolFees(big.NewInt(100), big.NewInt(100), 3) // fee0, fee1, account
-		project.AccountInfo()
-		project.VaultInfo(1)
-
-		return
-	}
 
 	if sw.DeployFactory > 0 {
 		project.DeployFactory() ///new factory  for crating new pools if old pool already exists
@@ -324,7 +282,7 @@ func test_vault() {
 		for i := 0; i < 5; i++ {
 			fmt.Println("swap y for x:", i)
 
-			project.Deposit(1, [4]int64{2, 1000, 3, 0}, false)
+			project.Deposit(1, [3]int64{2, 1000, 3}, false)
 
 			project.Swap(sw.Swap, sw.RebalanceParam[0], sw.RebalanceParam[2])
 
@@ -333,15 +291,13 @@ func test_vault() {
 		for i := 0; i < 5; i++ {
 			fmt.Println("swap x for y:", i)
 
-			project.Deposit(1, [4]int64{1, 5000, 3, 0}, false)
+			project.Deposit(1, [3]int64{1, 5000, 3}, false)
 
 			project.Swap(sw.Swap, sw.RebalanceParam[0], sw.RebalanceParam[2])
 
 		}
 
 	}
-
-	project.Strategy1(sw.Strategy1, sw.Strategy1Param)
 
 	project.Rebalance(sw.Rebalance, sw.RebalanceParam) /// make sure Account = 0
 
@@ -352,12 +308,7 @@ func test_vault() {
 		fmt.Println(i)
 	}
 
-	//project.CreatePosition(sw.CreatePosition)
-	//project.IncreasePosition(sw.IncreasePosition)
-	//project.RemovePosition(sw.RemovePosition)
-
 	project.CheckPrice(false, 3)
-
 	project.Equation(false, false)
 
 }
